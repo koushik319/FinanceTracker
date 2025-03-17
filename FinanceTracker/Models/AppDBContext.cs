@@ -11,15 +11,14 @@ namespace FinanceTracker.Models
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-           // modelBuilder.Entity<Expense>()
-           //.Property(e => e.Amount)
-           //.HasColumnType("decimal(18, 2)");
+           
             modelBuilder.Seed();
 
         }
 
-        public DbSet<Category> Categories { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Category> Categories { get; set; }
+       
         public DbSet<Expense> Expenses { get; set; }
 
 

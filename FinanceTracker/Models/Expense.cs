@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
+using FinanceTracker.Models;
 namespace FinanceTracker.Models
 {
     public class Expense
@@ -8,6 +9,16 @@ namespace FinanceTracker.Models
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [DisplayName("Expense Id")]
         public int ExpenseId { get; set; }
+
+        [Required]
+        [DisplayName("UserId")]
+        [ForeignKey("User Id")]
+        public int UserId { get; set; }
+        [Required]
+
+        [DisplayName("CategoryId")]
+        [ForeignKey("CategoryId")]
+        public int CategoryId { get; set; }
 
         [Required]
         [DisplayName("Description")]

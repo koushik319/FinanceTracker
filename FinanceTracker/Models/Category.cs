@@ -13,6 +13,9 @@ namespace FinanceTracker.Models
         //[StringLength(25)]
         [DisplayName("Category Name")]
         public string CategoryName { get; set; }
-       
+
+        //CHILD TABLE NAME : Expense 
+        public virtual ICollection<Expense> Expenses { get; set; }
+
     }
 }

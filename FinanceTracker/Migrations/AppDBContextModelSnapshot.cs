@@ -34,12 +34,7 @@ namespace FinanceTracker.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("CategoryId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Categories");
 
@@ -72,7 +67,7 @@ namespace FinanceTracker.Migrations
                         new
                         {
                             CategoryId = 6,
-                            CategoryName = "Opearting Expenses"
+                            CategoryName = "Operating Expenses"
                         });
                 });
 
@@ -87,7 +82,7 @@ namespace FinanceTracker.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<int?>("CategoryId")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
@@ -97,7 +92,7 @@ namespace FinanceTracker.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("ExpenseId");
@@ -107,6 +102,26 @@ namespace FinanceTracker.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Expenses");
+
+                    b.HasData(
+                        new
+                        {
+                            ExpenseId = 1,
+                            Amount = 10000.0,
+                            CategoryId = 1,
+                            Date = new DateTime(2025, 3, 16, 11, 20, 33, 117, DateTimeKind.Local).AddTicks(7238),
+                            Description = "House Rent",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            ExpenseId = 2,
+                            Amount = 4000.0,
+                            CategoryId = 5,
+                            Date = new DateTime(2025, 3, 16, 11, 20, 33, 117, DateTimeKind.Local).AddTicks(7249),
+                            Description = "Restaurants",
+                            UserId = 2
+                        });
                 });
 
             modelBuilder.Entity("FinanceTracker.Models.User", b =>
@@ -150,34 +165,45 @@ namespace FinanceTracker.Migrations
                             LastName = "Ram",
                             Password = "shiva@123",
                             PhoneNumber = "7891234567"
+                        },
+                        new
+                        {
+                            UserId = 2,
+                            EmailId = "koushik123@gmail.com",
+                            FirstName = "Koushik",
+                            LastName = "B",
+                            Password = "koushik@123",
+                            PhoneNumber = "9087654321"
                         });
-                });
-
-            modelBuilder.Entity("FinanceTracker.Models.Category", b =>
-                {
-                    b.HasOne("FinanceTracker.Models.User", null)
-                        .WithMany("Category")
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("FinanceTracker.Models.Expense", b =>
                 {
                     b.HasOne("FinanceTracker.Models.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId");
+                        .WithMany("Expenses")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("FinanceTracker.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
+                        .WithMany("Expenses")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Category");
 
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("FinanceTracker.Models.Category", b =>
+                {
+                    b.Navigation("Expenses");
+                });
+
             modelBuilder.Entity("FinanceTracker.Models.User", b =>
                 {
-                    b.Navigation("Category");
+                    b.Navigation("Expenses");
                 });
 #pragma warning restore 612, 618
         }

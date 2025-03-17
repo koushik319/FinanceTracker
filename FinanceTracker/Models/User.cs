@@ -30,7 +30,7 @@ namespace FinanceTracker.Models
         //[RegularExpression(@"^[a-zA-Z0-9@]{7,15}$", ErrorMessage = "Password must meet requirements")]
         public string Password { get; set; }
 
-        // CHILD TABLE NAME : CATEGORY
-        public virtual ICollection<Category> Category { get; set; }
+        // CHILD TABLE NAME : Expenses
+        public virtual ICollection<Expense> Expenses { get; set; }
     }
 }

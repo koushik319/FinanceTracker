@@ -24,24 +24,57 @@ namespace FinanceTracker.Controllers
         }
 
         // GET: api/Expenses
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<Expense>>> GetExpenses()
+        //{
+        //    if (_context.Expenses == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return await _context.Expenses.ToListAsync();
+        //}
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Expense>>> GetExpense()
+        public async Task<ActionResult<IEnumerable<Expense>>> GetExpenses([FromQuery] string? date, [FromQuery] int? categoryId, [FromQuery] int? userId)
         {
-          if (_context.Expenses == null)
-          {
-              return NotFound();
-          }
-            return await _context.Expenses.ToListAsync();
+            if (_context.Expenses == null)
+            {
+                return NotFound();
+            }
+
+            var expensesQuery = _context.Expenses.AsQueryable();
+
+            if (userId.HasValue)
+            {
+                expensesQuery = expensesQuery.Where(e => e.UserId == userId);
+            }
+
+            if (categoryId.HasValue)
+            {
+                expensesQuery = expensesQuery.Where(e => e.CategoryId == categoryId);
+            }
+
+            if (!string.IsNullOrEmpty(date))
+            {
+                DateTime selectedDate;
+                if (DateTime.TryParse(date, out selectedDate))
+                {
+                    expensesQuery = expensesQuery.Where(e => e.Date.Date == selectedDate.Date);
+                }
+            }
+
+            return await expensesQuery.ToListAsync();
         }
+
 
         // GET: api/Expenses/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Expense>> GetExpense(int id)
         {
-          if (_context.Expenses == null)
-          {
-              return NotFound();
-          }
+            if (_context.Expenses == null)
+            {
+                return NotFound();
+            }
             var expense = await _context.Expenses.FindAsync(id);
 
             if (expense == null)
@@ -51,6 +84,36 @@ namespace FinanceTracker.Controllers
 
             return expense;
         }
+
+        [HttpGet("GetSkillByUserId/{id}")]
+        public async Task<IActionResult> GetSkillByUserId(int id)
+        {
+            if (_context == null || _context.Expenses == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = "Database context is unavailable." });
+            }
+
+            var exp = await _context.Expenses
+                .Where(e => e.UserId == id)
+                .Include(s => s.Category)
+                .Select(s => new
+                {
+                    SkillId = s.ExpenseId,
+                    Description = s.Description,
+                    //ITRoleName = s.ITRole != null ? s.ITRole.RoleName : null,
+                    //ExperienceYears = s.ExperienceYears
+                })
+                .ToListAsync();
+
+            if (!exp.Any())
+            {
+                return NotFound(new { message = "No expenses found for the given User ID." });
+            }
+
+            //return Ok(new { success = true, data = expenses });
+            return Ok(exp);
+        }
+
 
         // PUT: api/Expenses/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -86,12 +149,13 @@ namespace FinanceTracker.Controllers
         // POST: api/Expenses
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+
         public async Task<ActionResult<Expense>> PostExpense(Expense expense)
         {
-          if (_context.Expenses == null)
-          {
-              return Problem("Entity set 'AppDBContext.Expense'  is null.");
-          }
+            if (_context.Expenses == null)
+            {
+                return Problem("Entity set 'AppDBContext.Expense'  is null.");
+            }
             _context.Expenses.Add(expense);
             await _context.SaveChangesAsync();
 

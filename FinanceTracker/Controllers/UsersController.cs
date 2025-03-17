@@ -25,12 +25,12 @@ namespace FinanceTracker.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUser()
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-          if (_context.Users == null)
-          {
-              return NotFound();
-          }
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
             return await _context.Users.ToListAsync();
         }
 
@@ -38,10 +38,10 @@ namespace FinanceTracker.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-          if (_context.Users == null)
-          {
-              return NotFound();
-          }
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
             var user = await _context.Users.FindAsync(id);
 
             if (user == null)
@@ -89,10 +89,10 @@ namespace FinanceTracker.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<User>> PostUser(User user)
         {
-          if (_context.Users == null)
-          {
-              return Problem("Entity set 'AppDBContext.User'  is null.");
-          }
+            if (_context.Users == null)
+            {
+                return Problem("Entity set 'AppDBContext.User'  is null.");
+            }
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
